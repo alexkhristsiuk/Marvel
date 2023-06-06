@@ -1,6 +1,8 @@
 class MarvelService {
     _apiBase = 'https://gateway.marvel.com:443/v1/public/';
     _apiKey ='apikey=a89ae7601a3e858e276ab1d5d52bdc69';
+    _baseOffset = 213;
+
     getResources = async (url) => {
         const res = await fetch(url);
         if(!res.ok) {
@@ -9,8 +11,8 @@ class MarvelService {
         return await res.json();
     };
 
-    getAllCharacters = async () => {
-        const res = await this.getResources(`${this._apiBase}characters?limit=9&offset=210&${this._apiKey}`);
+    getAllCharacters = async (offset = this._baseOffset) => {
+        const res = await this.getResources(`${this._apiBase}characters?limit=9&offset=${offset}&${this._apiKey}`);
         return res.data.results.map(this._transformCharacter);
     }
 
@@ -20,15 +22,15 @@ class MarvelService {
     }
 
     _transformCharacter = (char) => {
-        if (char.description.length < 180) {
-            return {
-                name: char.name,
-                description:char.description ? char.description.slice(0, 210) : 'Ooops! HYDRA has stolen description about this hero.',
-                thumbnail:char.thumbnail.path + '.' + char.thumbnail.extension,
-                homepage:char.urls[0].url,
-                wiki: char.urls[1].url
-            }
-        } 
+        return {
+            id: char.id,
+            name: char.name,
+            description: char.description ? `${char.description.slice(0, 210)}...` : 'Ooops! HYDRA has stolen description about this hero.',
+            thumbnail: char.thumbnail.path + '.' + char.thumbnail.extension,
+            homepage: char.urls[0].url,
+            wiki: char.urls[1].url,
+            comics: char.comics.items.slice(0, 10)
+        }
     }
 }
 

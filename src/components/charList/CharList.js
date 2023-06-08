@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import MarvelService from '../../services/MarvelService';
 import ErrorMessage from '../errorMessage/ErrorMessage';
+import PropTypes from "prop-types";
 import Spinner from '../spinner/Spiner';
 import './charList.scss';
 
@@ -19,18 +20,24 @@ class CharList extends Component{
 
     componentDidMount() {
         this.onRequest();
-        window.addEventListener('scroll',() => this.charListLoadedByScroll(this.state.offset))
+        /* window.addEventListener('scroll',() => this.charListLoadedByScroll(this.state.offset)) */
     }
 
-    componentWillUnmount() {
-        window.removeEventListener(this.state.offset);
+// Loading character by scroll
+
+/*     componentWillUnmount() {
+        window.removeEventListener('scroll',() => this.charListLoadedByScroll(this.state.offset));
     }
 
-    charListLoadedByScroll(offset) {
+    charListLoadedByScroll = (offset) => {
+        if (this.state.newItemLoading) return;
+        if (this.charEnded) {
+            window.removeEventListener('scroll',() => this.charListLoadedByScroll(this.state.offset));
+        }
 		if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
             this.onRequest(offset);
         }
-	}
+	} */
 
     onRequest = (offset) => {
         this.onCharListLoading();
@@ -68,8 +75,20 @@ class CharList extends Component{
         })
     }
 
+    itemsRefs = [];
+
+    setRef = (ref) => {
+        this.itemsRefs.push(ref);
+    }
+
+    focusOnItem = (id) => {
+        this.itemsRefs.forEach(item => item.classList.remove('char__item_selected'));
+        this.itemsRefs[id].classList.add('char__item_selected');
+        this.itemsRefs[id].focus();
+    }
+
     renderListItems(arr) {
-        const items = arr.map(item => {
+        const items = arr.map((item, i) => {
             let imgStyle = {'objectFit': 'cover'};
             if (item.thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg' || item.thumbnail ==='http://i.annihil.us/u/prod/marvel/i/mg/f/60/4c002e0305708.gif') {
                 imgStyle = {'objectFit': 'fill'};
@@ -77,8 +96,19 @@ class CharList extends Component{
 
             return (
                 <li className="char__item" 
-                    key={item.id} 
-                    onClick={() => this.props.onCharSelected(item.id)}>
+                    key={item.id}
+                    tabIndex={0}
+                    ref={this.setRef} 
+                    onClick={() => {
+                        this.props.onCharSelected(item.id);
+                        this.focusOnItem(i);
+                        }}
+                    onKeyUp={(e) => {
+                        if (e.key === ' ' || e.key === 'Enter') {
+                            this.props.onCharSelected(item.id);
+                            this.focusOnItem(i)
+                        }
+                    }}>
                         <img src={item.thumbnail} alt={item.name} style={imgStyle}/>
                         <div className="char__name">{item.name}</div>
                 </li>
@@ -114,6 +144,10 @@ class CharList extends Component{
             </div>
         )
     }
+}
+
+CharList.propTypes = {
+    onCharSelected: PropTypes.func.isRequired
 }
 
 export default CharList;

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom/cjs/react-router-dom.min';
 import useMarvelService from '../../services/MarvelService';
 import Spinner from '../spinner/Spiner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
@@ -79,7 +80,9 @@ const View = ({char}) => {
                     comics.map((item, i) => {
                         return (
                             <li key={i} className="char__comics-item">
-                                {item.name}
+                                <Link to={`/comics/${item.resourceURI.slice(43, 48)}`}>
+                                    {item.name}
+                                </Link>    
                             </li>
                         )
                     })

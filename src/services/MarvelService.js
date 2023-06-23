@@ -18,6 +18,11 @@ const useMarvelService = () => {
         return _transformCharacter(res.data.results[0]);
     }
 
+    const getCharacterByName = async (name) => {
+        const res = await request(`${_apiBase}characters?name=${name}&${_apiKey}`);
+        return res.data.results.map(_transformCharacter);
+    }
+
     const getAllComics = async (offset = _comicsOffset) => {
         const res = await request(`${_apiBase}comics?limit=8&offset=${offset}&${_apiKey}`);
         return res.data.results.map(_transformComic);
@@ -47,11 +52,11 @@ const useMarvelService = () => {
             description: comic.description,
             pageCount: comic.pageCount ? `${comic.pageCount}` : 'GYDRA stolen this information.',
             thumbnail: comic.thumbnail.path + '.' + comic.thumbnail.extension,
-            price: comic.prices[0].price ? `${comic.prices[0].price}$` : 'Oooops! GYDRA stolen information about price',
+            language: comic.textObjects.language || 'en-us',
+            price: comic.prices[0].price ? `${comic.prices[0].price}$` : 'Not available now.',
         }
     }
-    
-    return {loading, error, clearError, getAllCharacters, getCharacter, getAllComics, getComic};
+    return {loading, error, clearError, getAllCharacters, getCharacter, getCharacterByName, getAllComics, getComic};
 }
 
 export default useMarvelService;

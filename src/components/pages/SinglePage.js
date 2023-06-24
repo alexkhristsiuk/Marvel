@@ -24,6 +24,8 @@ const SinglePage = ({Component, dataType}) => {
             case 'character':
                 getCharacter(id).then(onDataLoaded);
                 break;
+            default:
+                console.log('Error');
         }
         
     }

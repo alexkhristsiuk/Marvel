@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom/cjs/react-router-dom.min";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { MainPage } from "../pages";
 import AppHeader from "../appHeader/AppHeader";
 import Spinner from "../spinner/Spiner";

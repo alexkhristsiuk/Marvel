@@ -25,7 +25,7 @@ const SinglePage = ({Component, dataType}) => {
                 getCharacter(id).then(onDataLoaded);
                 break;
             default:
-                console.log('Error');
+                throw new Error('Somethig go wrong!');
         }
         
     }
